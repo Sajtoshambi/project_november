@@ -9,6 +9,7 @@ dotenv.config();
 
 const authRouter = require("./routes/auth");
 const lessonsRouter = require("./routes/lessons");
+const registrationsRouter = require("./routes/registrations");
 const { getAuthSecret } = require("./services/auth");
 const { HttpError } = require("./services/http-error");
 
@@ -81,6 +82,7 @@ app.get("/api/health", (req, res) => {
 
 app.use("/api/auth", authRouter);
 app.use("/api/lessons", lessonsRouter);
+app.use("/api/registrations", registrationsRouter);
 
 app.use((req, res, next) => {
   next(new HttpError(404, "Route not found"));
