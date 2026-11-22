@@ -21,10 +21,11 @@ function publicUser(user) {
 
 router.post("/register", async (req, res, next) => {
   try {
-    const name = typeof req.body.name === "string" ? req.body.name.trim() : "";
+    const body = req.body || {};
+    const name = typeof body.name === "string" ? body.name.trim() : "";
     const email =
-      typeof req.body.email === "string" ? req.body.email.trim().toLowerCase() : "";
-    const password = req.body.password;
+      typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
+    const password = body.password;
 
     if (!name || name.length > 255) {
       throw new HttpError(400, "name is required and must be at most 255 characters");
@@ -59,9 +60,10 @@ router.post("/register", async (req, res, next) => {
 
 router.post("/login", async (req, res, next) => {
   try {
+    const body = req.body || {};
     const email =
-      typeof req.body.email === "string" ? req.body.email.trim().toLowerCase() : "";
-    const password = req.body.password;
+      typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
+    const password = body.password;
     const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1);
 
     if (!user || typeof password !== "string" || !(await verifyPassword(password, user.passwordHash))) {

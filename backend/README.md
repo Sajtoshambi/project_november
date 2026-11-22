@@ -41,7 +41,7 @@ npm run db:generate
 npm run db:migrate
 ```
 
-Az alapértelmezett `users` táblában korábban tárolt felhasználók jelszóhash nélkül maradnak; belépésük nem lehetséges, amíg az adminfiók-létrehozó parancs nem állít be hozzájuk jelszót.
+Az alapértelmezett `users` táblában korábban tárolt fiókok jelszóhash nélkül maradnak, ezért nem tudnak belépni. A meglévő fiókokat az üzemeltetőnek biztonságos jelszóbeállítási folyamattal kell rendeznie; az adminfiók-létrehozó parancsot kizárólag adminfiókhoz használd.
 
 ## Tesztek
 

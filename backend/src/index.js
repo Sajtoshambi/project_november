@@ -15,8 +15,12 @@ const { HttpError } = require("./services/http-error");
 
 const app = express();
 const PROJECT_NAME = process.env.PROJECT_NAME || "fullstack";
-const PORT = process.env.BACKEND_PORT || process.env.PORT || 3000;
+const PORT = Number(process.env.BACKEND_PORT || process.env.PORT || 3000);
 const FRONTEND_PORT = process.env.FRONTEND_PORT || 5173;
+
+if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
+  throw new Error("BACKEND_PORT must be an integer between 1 and 65535");
+}
 
 // Configure allowed CORS origins dynamically based on FRONTEND_PORT
 const allowedOrigins = [

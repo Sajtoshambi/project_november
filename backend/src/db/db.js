@@ -25,6 +25,7 @@ const connectionUrl =
 
 const poolConnection = mysql.createPool({
   uri: connectionUrl,
+  timezone: "Z",
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,

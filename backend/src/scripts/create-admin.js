@@ -10,9 +10,17 @@ async function createAdmin() {
   const email = process.env.AUTH_ADMIN_EMAIL?.trim().toLowerCase();
   const password = process.env.AUTH_ADMIN_PASSWORD;
 
-  if (!name || !email || !password || password.length < 8) {
+  if (
+    !name ||
+    !email ||
+    email.length > 255 ||
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ||
+    !password ||
+    password.length < 8 ||
+    password.length > 128
+  ) {
     throw new Error(
-      "Set AUTH_ADMIN_NAME, AUTH_ADMIN_EMAIL, and an AUTH_ADMIN_PASSWORD of at least 8 characters"
+      "Set valid AUTH_ADMIN_NAME, AUTH_ADMIN_EMAIL, and an AUTH_ADMIN_PASSWORD between 8 and 128 characters"
     );
   }
 
