@@ -13,7 +13,7 @@ const users = mysqlTable("users", {
   id: int("id").primaryKey().autoincrement(),
   name: varchar("name", { length: 255 }),
   email: varchar("email", { length: 255 }).notNull().unique(),
-  passwordHash: varchar("password_hash", { length: 255 }).notNull(),
+  passwordHash: varchar("password_hash", { length: 255 }),
   role: mysqlEnum("role", ["visitor", "admin"]).notNull().default("visitor"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
@@ -33,7 +33,7 @@ const lessons = mysqlTable(
       .references(() => rooms.name, { onDelete: "restrict" }),
     startsAt: datetime("starts_at", { mode: "date" }).notNull(),
     endsAt: datetime("ends_at", { mode: "date" }).notNull(),
-    capacity: int("capacity").unsigned().notNull(),
+    capacity: int("capacity", { unsigned: true }).notNull(),
     createdBy: int("created_by")
       .notNull()
       .references(() => users.id, { onDelete: "restrict" }),
@@ -74,7 +74,4 @@ module.exports = {
   lessons,
   registrations,
 };
-});
-
-module.exports = { users };
 

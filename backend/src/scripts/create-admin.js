@@ -16,18 +16,19 @@ async function createAdmin() {
     );
   }
 
+  const passwordHash = await hashPassword(password);
   await db
     .insert(users)
     .values({
       name,
       email,
-      passwordHash: await hashPassword(password),
+      passwordHash,
       role: "admin",
     })
     .onDuplicateKeyUpdate({
       set: {
         name,
-        passwordHash: await hashPassword(password),
+        passwordHash,
         role: "admin",
       },
     });

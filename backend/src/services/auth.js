@@ -23,18 +23,14 @@ async function verifyPassword(password, encodedHash) {
     return false;
   }
 
-  try {
-    const salt = Buffer.from(encodedSalt, "base64url");
-    const expectedKey = Buffer.from(encodedKey, "base64url");
-    if (salt.length !== 16 || expectedKey.length !== 64) {
-      return false;
-    }
-
-    const actualKey = await scrypt(password, salt, expectedKey.length);
-    return timingSafeEqual(expectedKey, actualKey);
-  } catch {
+  const salt = Buffer.from(encodedSalt, "base64url");
+  const expectedKey = Buffer.from(encodedKey, "base64url");
+  if (salt.length !== 16 || expectedKey.length !== 64) {
     return false;
   }
+
+  const actualKey = await scrypt(password, salt, expectedKey.length);
+  return timingSafeEqual(expectedKey, actualKey);
 }
 
 function issueAccessToken(user, secret = process.env.AUTH_SECRET, now = Date.now()) {
