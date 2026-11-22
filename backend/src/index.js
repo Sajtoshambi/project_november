@@ -7,7 +7,9 @@ dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 dotenv.config();
 
-const usersRouter = require("./routes/users");
+const authRouter = require("./routes/auth");
+const { getAuthSecret } = require("./services/auth");
+const { HttpError } = require("./services/http-error");
 
 const app = express();
 const PROJECT_NAME = process.env.PROJECT_NAME || "fullstack";
@@ -60,7 +62,7 @@ try {
 }
 
 app.use(corsMiddleware);
-app.use(express.json());
+app.use(express.json({ limit: "16kb" }));
 
 // Health Check Endpoint
 app.get("/api/health", (req, res) => {
@@ -76,21 +78,38 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-// Routes
-app.use("/api/users", usersRouter);
+app.use("/api/auth", authRouter);
 
-// Global Error Handler
+app.use((req, res, next) => {
+  next(new HttpError(404, "Route not found"));
+});
+
 app.use((err, req, res, next) => {
-  console.error("[SERVER ERROR]", err);
-  res.status(500).json({
-    error: err.message || "Internal Server Error",
+  const status =
+    Number.isInteger(err.status) && err.status >= 400 && err.status <= 599
+      ? err.status
+      : 500;
+  if (status >= 500) {
+    console.error("[SERVER ERROR]", err);
+  }
+  res.status(status).json({
+    error: status >= 500 ? "Internal Server Error" : err.message,
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`==============================================`);
-  console.log(`🚀 [${PROJECT_NAME}] Express API running on http://localhost:${PORT}`);
-  console.log(`🌐 CORS enabled for Frontend Port: ${FRONTEND_PORT}`);
-  console.log(`🩺 Health check: http://localhost:${PORT}/api/health`);
-  console.log(`==============================================`);
-});
+function startServer() {
+  getAuthSecret();
+  return app.listen(PORT, () => {
+    console.log(`==============================================`);
+    console.log(`[${PROJECT_NAME}] Express API running on http://localhost:${PORT}`);
+    console.log(`CORS enabled for Frontend Port: ${FRONTEND_PORT}`);
+    console.log(`Health check: http://localhost:${PORT}/api/health`);
+    console.log(`==============================================`);
+  });
+}
+
+if (require.main === module) {
+  startServer();
+}
+
+module.exports = { app, startServer };
